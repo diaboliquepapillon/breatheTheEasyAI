@@ -1,44 +1,69 @@
-require('dotenv').config();
-const express = require('express');
-const axios = require('axios');
-const rateLimit = require('express-rate-limit');
-const cors = require('cors');
+import "dotenv/config";
+import express from "express";
+import axios from "axios";
+import rateLimit from "express-rate-limit";
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Rate Limiting (Max 100 requests per 15 minutes per IP)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: "Too many requests, please try again later."
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
 });
 
-app.use('/api/mapbox', limiter);
-app.use(cors()); // Enable CORS for frontend communication
+app.use(cors());
+app.use(express.json());
 
-// Mapbox Proxy API Route
-app.get('/api/mapbox', async (req, res) => {
+function parseLatLon(latRaw, lonRaw) {
+  const lat = typeof latRaw === "string" ? parseFloat(latRaw) : Number(latRaw);
+  const lon = typeof lonRaw === "string" ? parseFloat(lonRaw) : Number(lonRaw);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return { error: "Invalid coordinates" };
+  }
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+    return { error: "Coordinates out of range" };
+  }
+  return { lat, lon };
+}
+
+app.get("/api/mapbox", limiter, async (req, res) => {
   try {
-    const { lat, lon } = req.query;
-
-    if (!lat || !lon) {
-      return res.status(400).json({ error: 'Missing coordinates' });
+    const token = process.env.MAPBOX_TOKEN;
+    if (!token) {
+      return res.status(503).json({ error: "Mapbox token not configured" });
     }
 
-    // Securely fetch data from Mapbox API
-    const response = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lon},${lat}.json`, {
-      params: {
-        access_token: process.env.MAPBOX_TOKEN
-      }
-    });
+    const parsed = parseLatLon(req.query.lat, req.query.lon);
+    if (parsed.error) {
+      return res.status(400).json({ error: parsed.error });
+    }
+    const { lat, lon } = parsed;
+
+    const response = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${lon},${lat}.json`,
+      {
+        params: { access_token: token },
+        timeout: 12_000,
+        validateStatus: () => true,
+      },
+    );
+
+    if (response.status >= 400) {
+      console.error("Mapbox error status:", response.status);
+      return res.status(502).json({ error: "Upstream geocoding error" });
+    }
 
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching data from Mapbox:', error);
-    res.status(500).json({ error: 'Failed to fetch data' });
+    console.error("Error fetching data from Mapbox:", error.message);
+    res.status(500).json({ error: "Failed to fetch data" });
   }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
