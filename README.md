@@ -17,14 +17,14 @@ BreathEasyAI is a single-page web application that guides users through a **box-
 
 ## Tech Stack
 
-| Layer | Technologies |
-|--------|----------------|
-| **Frontend** | React 18, TypeScript, Vite (`@vitejs/plugin-react-swc`), React DOM |
-| **Styling** | Tailwind CSS 3, PostCSS, Autoprefixer, `tailwindcss-animate`, `class-variance-authority`, `clsx`, `tailwind-merge` |
-| **UI / DX** | shadcn-aligned project layout (`components.json`), Radix UI primitives and related libraries (project scaffold; extend as needed) |
-| **Backend (proxy)** | Node.js (ES modules), Express, Axios, CORS, `express-rate-limit`, `dotenv` |
-| **External API** | Mapbox Geocoding v5 (`mapbox.places` reverse lookup) |
-| **Quality** | ESLint 9, `typescript-eslint`, React Hooks / Refresh plugins |
+| Layer               | Technologies                                                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**        | React 18, TypeScript, Vite (`@vitejs/plugin-react-swc`), React DOM                                                                |
+| **Styling**         | Tailwind CSS 3, PostCSS, Autoprefixer, `tailwindcss-animate`, `class-variance-authority`, `clsx`, `tailwind-merge`                |
+| **UI / DX**         | shadcn-aligned project layout (`components.json`), Radix UI primitives and related libraries (project scaffold; extend as needed) |
+| **Backend (proxy)** | Node.js (ES modules), Express, Axios, CORS, `express-rate-limit`, `dotenv`                                                        |
+| **External API**    | Mapbox Geocoding v5 (`mapbox.places` reverse lookup)                                                                              |
+| **Quality**         | ESLint 9, `typescript-eslint`, React Hooks / Refresh plugins                                                                      |
 
 ## Architecture / Approach
 
@@ -44,7 +44,7 @@ cp .env.example .env
 Edit `.env` and set:
 
 - `MAPBOX_TOKEN` — required for place names via the proxy  
-- `PORT` — optional; default `5000` for the Express server  
+- `PORT` — optional; default `5000` for the Express server
 
 ## Usage
 
@@ -93,14 +93,15 @@ npm run lint
 
 - **Never expose Mapbox (or similar) tokens in the client**; a thin proxy with validation and rate limits is a small upfront cost with large security payoff.
 - **Input validation at the API boundary** (types, ranges) prevents malformed requests from hitting paid or quota-limited third-party APIs.
-- **Motion design carries UX cost**: synchronizing timers, SVG animation, and CSS transforms requires a consistent phase clock and explicit **`prefers-reduced-motion`** handling.
+- **Motion design carries UX cost**: synchronizing timers, SVG animation, and CSS transforms requires a consistent phase clock and explicit `**prefers-reduced-motion`** handling.
 - **OKLCH and tinted neutrals** simplify perceptually consistent theming and dark-mode surfaces compared with ad hoc HSL grays.
 - **Separation of concerns** between “breathing UX” and “location enrichment” keeps the core experience usable when geolocation or Mapbox is unavailable.
 
 ## Future Improvements
 
-- Add a root **`.gitignore`** for `node_modules/`, `dist/`, and local `.env` if not already present in deployment workflows.
+- Add a root `**.gitignore`** for `node_modules/`, `dist/`, and local `.env` if not already present in deployment workflows.
 - **Automated tests** for the proxy (validation, error mapping, rate limit behavior) and shallow component tests for phase transitions.
 - **CI pipeline** (install, lint, build) on pull requests.
 - **Air quality or environmental data** (separate API) with the same proxy pattern, if product scope expands beyond breathing guidance.
 - **Hardening for production**: structured logging, request IDs, trusted proxy configuration behind TLS, and stricter CORS origin allowlists.
+
