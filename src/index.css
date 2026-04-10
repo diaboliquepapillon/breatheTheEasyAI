@@ -2,50 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Palette: OKLCH with neutrals tinted toward brand hue (~200° sea/sage).
+  Typography: Fraunces (display) + Libre Franklin (UI) — per Impeccable, avoid generic Inter-only stacks.
+*/
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 186 94% 42%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 199 89% 48%;
+    --font-display: "Fraunces", "Georgia", ui-serif, serif;
+    --font-sans: "Libre Franklin", system-ui, sans-serif;
+    --ease-breath: cubic-bezier(0.25, 1, 0.5, 1);
     --radius: 0.75rem;
+
+    --background: oklch(98.4% 0.009 200);
+    --foreground: oklch(24% 0.042 200);
+    --card: oklch(100% 0.006 200);
+    --card-foreground: oklch(24% 0.042 200);
+    --popover: oklch(100% 0.006 200);
+    --popover-foreground: oklch(24% 0.042 200);
+    --primary: oklch(48% 0.1 192);
+    --primary-foreground: oklch(99% 0.006 200);
+    --secondary: oklch(95.5% 0.016 200);
+    --secondary-foreground: oklch(28% 0.045 200);
+    --muted: oklch(95% 0.014 200);
+    --muted-foreground: oklch(44% 0.038 200);
+    --accent: oklch(58% 0.09 188);
+    --accent-foreground: oklch(99% 0.006 200);
+    --destructive: oklch(52% 0.2 25);
+    --destructive-foreground: oklch(99% 0.006 200);
+    --border: oklch(90% 0.018 200);
+    --input: oklch(90% 0.018 200);
+    --ring: oklch(48% 0.1 192);
+
+    --breath-glow: color-mix(in oklch, var(--primary) 18%, transparent);
+    --surface-line: color-mix(in oklch, var(--border) 65%, transparent);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 186 94% 42%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 48%;
+    --background: oklch(16% 0.022 205);
+    --foreground: oklch(96% 0.012 200);
+    --card: oklch(20% 0.024 205);
+    --card-foreground: oklch(96% 0.012 200);
+    --popover: oklch(20% 0.024 205);
+    --popover-foreground: oklch(96% 0.012 200);
+    --primary: oklch(62% 0.09 192);
+    --primary-foreground: oklch(16% 0.022 205);
+    --secondary: oklch(24% 0.028 205);
+    --secondary-foreground: oklch(96% 0.012 200);
+    --muted: oklch(24% 0.026 205);
+    --muted-foreground: oklch(72% 0.028 200);
+    --accent: oklch(58% 0.08 188);
+    --accent-foreground: oklch(16% 0.022 205);
+    --destructive: oklch(55% 0.18 25);
+    --destructive-foreground: oklch(98% 0.006 200);
+    --border: oklch(30% 0.028 205);
+    --input: oklch(30% 0.028 205);
+    --ring: oklch(62% 0.09 192);
+
+    --breath-glow: color-mix(in oklch, var(--primary) 22%, transparent);
+    --surface-line: color-mix(in oklch, var(--border) 55%, transparent);
   }
 
   * {
@@ -54,5 +68,28 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+  }
+
+  .transition-breath {
+    transition: transform 4s var(--ease-breath);
   }
 }
